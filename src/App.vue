@@ -1,9 +1,9 @@
 <template>
   <v-app>
-
-
     <v-main>
-      <ShopStepper />
+      <v-container fill-height fluid>
+        <ShopStepper />
+      </v-container>
     </v-main>
   </v-app>
 </template>
@@ -25,7 +25,4 @@ export default {
 </script>
 
 <style>
-.col {
-  padding: 0 !important;
-}
 </style>
