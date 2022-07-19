@@ -5,10 +5,10 @@
         <v-img src="../assets/tshirt-blank.png" width="345" height="170">
           <v-row class="tshirt-overlay px-5">
             <v-col cols="6" class="d-flex justify-center align-center">
-              <img v-if="formData.positionFront" :src="getPicUrl()" class="tshirt-pic-front" />
+              <img v-if="positionFront" :src="getPicUrl()" class="tshirt-pic-front" />
             </v-col>
             <v-col cols="6" class="d-flex justify-center align-center pl-6">
-              <img v-if="formData.positionBack" :src="getPicUrl()" class="tshirt-pic-back" />
+              <img v-if="positionBack" :src="getPicUrl()" class="tshirt-pic-back" />
             </v-col>
           </v-row>
         </v-img>
@@ -25,8 +25,8 @@
           <v-stepper-content step="1">
             <v-row>
               <v-col cols="12" class="d-flex flex-column mb-5">
-                <v-checkbox v-model="formData.positionFront" label="Przód" class="pl-2"></v-checkbox>
-                <v-checkbox v-model="formData.positionBack" label="Tył" class="pl-2"></v-checkbox>
+                <v-checkbox v-model="positionFront" label="Przód" class="pl-2"></v-checkbox>
+                <v-checkbox v-model="positionBack" label="Tył" class="pl-2"></v-checkbox>
                 <v-btn @click="nextStep()" small color="primary" class="align-self-center">
                   Dalej
                 </v-btn>
@@ -49,7 +49,7 @@
                 </v-btn>
               </v-col>
               <v-col cols="4" class="d-flex flex-column">
-                <img v-if="formData.positionFront" :src="getPicUrl()" class="pic-select-prev" />
+                <img :src="getPicUrl()" class="pic-select-prev" />
               </v-col>
               <v-col cols="4" class="d-flex justify-center align-center">
                 <v-btn @click="nextPic()" class="mx-2" fab small outlined>
@@ -80,17 +80,68 @@
 
           <!-- step 3 -->
           <v-stepper-step :complete="currentStep > 3" step="3">
-            Dane do wysyłki
+            Dane zamawiającego
           </v-stepper-step>
 
           <v-stepper-content step="3">
-            <v-card></v-card>
-            <v-btn @click="nextStep()">
-              Continue
-            </v-btn>
-            <v-btn @click="prevStep()">
-              Cancel
-            </v-btn>
+            <ClientDataForm @submitClick="onClientDataFormSubmit" @backClick="prevStep" />
+          </v-stepper-content>
+
+          <!-- step 4 -->
+          <v-stepper-step :complete="currentStep > 4" step="4">
+            Podsumowanie
+          </v-stepper-step>
+
+          <v-stepper-content step="4">
+            <v-row>
+              <v-col cols="12">
+                <h5>Pozycja nadruku:</h5>
+                <span v-if="positionFront">przód</span>
+                <span v-if="positionFront && positionBack"> i </span>
+                <span v-if="positionBack">tył</span>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12">
+                <h5>Nadruk:</h5>
+                <img :src="getPicUrl()" class="pic-select-prev" />
+              </v-col>
+            </v-row>
+            <v-row v-if="formValue">
+              <v-col cols="12">
+                <v-row>
+                  <v-col cols="12">
+                    <h5>Dane zamawiającego:</h5>
+                    <span>{{ formValue.clientFirstName }} {{ formValue.clientLastName }}</span>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <h5>Dane do rachunku:</h5>
+                    <div>
+                      <span>ul. {{ formValue.streetName }} {{ formValue.buildingNumber }}</span>
+                      <span v-if="formValue.flatNumber"> / {{ formValue.flatNumber }}</span>
+                    </div>
+                    <div>
+                      <span>{{ formValue.cityCode }} {{ formValue.cityName }}</span>
+                    </div>
+                    <div>
+                      <span>{{ formValue.email }}</span>
+                    </div>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" class="d-flex justify-center align-center mb-5">
+                <v-btn @click="prevStep()" small outlined class="align-self-center mx-1">
+                  Wstecz
+                </v-btn>
+                <v-btn @click="nextStep()" small color="primary" class="align-self-center mx-1">
+                  Złóż zamówienie
+                </v-btn>
+              </v-col>
+            </v-row>
           </v-stepper-content>
 
         </v-stepper>
@@ -101,18 +152,23 @@
 </template>
 
 <script>
+import ClientDataForm from './ClientDataForm';
+
+
 export default {
   name: 'ShopWizard',
-
+  components: { ClientDataForm },
   data: () => ({
     currentStep: 1,
     picId: 1000,
-    formData: {
-      positionFront: true,
-      positionBack: false,
-    },
 
+    positionFront: true,
+    positionBack: false,
 
+    formValue: null
+  }),
+
+  methods: {
     randomPic() {
       const randomId = Math.floor(Math.random() * (1025 - 1000) + 1000);
       if (randomId === this.picId) {
@@ -142,9 +198,14 @@ export default {
 
     getPicUrl() {
       return `https://picsum.photos/id/${this.picId}/50/`
-    }
+    },
 
-  }),
+    onClientDataFormSubmit(value) {
+      this.formValue = value;
+      this.nextStep();
+    }
+  }
+
 }
 </script>
 
