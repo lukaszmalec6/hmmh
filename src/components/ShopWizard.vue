@@ -102,7 +102,7 @@
 
 <script>
 export default {
-  name: 'ShopWizzard',
+  name: 'ShopWizard',
 
   data: () => ({
     currentStep: 1,

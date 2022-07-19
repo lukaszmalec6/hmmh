@@ -2,20 +2,20 @@
   <v-app>
     <v-main>
       <v-container fill-height fluid>
-        <ShopStepper />
+        <ShopWizard />
       </v-container>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import ShopStepper from './components/ShopStepper';
+import ShopWizard from './components/ShopWizard';
 
 export default {
   name: 'App',
 
   components: {
-    ShopStepper,
+    ShopWizard,
   },
 
   data: () => ({
