@@ -15,10 +15,16 @@
       </v-col>
     </v-row>
     <v-row>
+      <v-col cols="12" class="d-flex justify-center align-center">
+        <span>Aktualna cena:</span>
+        <span class="font-weight-bold ml-1">{{ getPrice() }} u.</span>
+      </v-col>
+    </v-row>
+    <v-row>
       <v-col cols="12">
         <v-stepper class="stepper" v-model="currentStep" vertical>
 
-          <!-- step 1: position-->
+          <!-- step 1-->
           <v-stepper-step :complete="currentStep > 1" step="1">
             Wybór miejsca nadruku
           </v-stepper-step>
@@ -34,7 +40,7 @@
             </v-row>
           </v-stepper-content>
 
-          <!-- step 2: img-->
+          <!-- step 2-->
           <v-stepper-step :complete="currentStep > 2" step="2">
             Wybór grafiki do nadruku
           </v-stepper-step>
@@ -78,21 +84,50 @@
             </v-row>
           </v-stepper-content>
 
-          <!-- step 3 -->
+          <!-- step 3-->
           <v-stepper-step :complete="currentStep > 3" step="3">
-            Dane zamawiającego
+            Wybór efektów nadruku
           </v-stepper-step>
-
           <v-stepper-content step="3">
-            <ClientDataForm @submitClick="onClientDataFormSubmit" @backClick="prevStep" />
+            <v-row>
+              <v-col cols="12 ml-3">
+                <v-radio-group v-model="picEffect">
+                  <v-radio label="Odcień szarości" value="grayscale"></v-radio>
+                  <v-radio label="Rozmycie" value="blur"></v-radio>
+                  <v-slider v-if="picEffect === 'blur'" v-model="blurScale" hint="Stopień rozmycia" max="10" min="1"
+                    class="mt-2">
+                  </v-slider>
+                  <v-radio label="Żaden" :value="null"></v-radio>
+                </v-radio-group>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" class="d-flex justify-center align-center mb-5">
+                <v-btn @click="prevStep()" small outlined class="align-self-center mx-1">
+                  Wstecz
+                </v-btn>
+                <v-btn @click="nextStep()" small color="primary" class="align-self-center mx-1">
+                  Dalej
+                </v-btn>
+              </v-col>
+            </v-row>
           </v-stepper-content>
 
           <!-- step 4 -->
           <v-stepper-step :complete="currentStep > 4" step="4">
-            Podsumowanie
+            Dane zamawiającego
           </v-stepper-step>
 
           <v-stepper-content step="4">
+            <ClientDataForm @submitClick="onClientDataFormSubmit" @backClick="prevStep" />
+          </v-stepper-content>
+
+          <!-- step 5 -->
+          <v-stepper-step :complete="currentStep > 5" step="5">
+            Podsumowanie
+          </v-stepper-step>
+
+          <v-stepper-content step="5">
             <v-row>
               <v-col cols="12">
                 <h5>Pozycja nadruku:</h5>
@@ -160,15 +195,39 @@ export default {
   components: { ClientDataForm },
   data: () => ({
     currentStep: 1,
+
     picId: 1000,
+    picEffect: null,
+    blurScale: 1,
 
     positionFront: true,
     positionBack: false,
 
+
     formValue: null
   }),
 
+
   methods: {
+    getPicUrl() {
+      if (this.picEffect) {
+        const query = this.picEffect === 'blur' ? `=${this.blurScale}` : ''
+        return `https://picsum.photos/id/${this.picId}/50/?${this.picEffect}${query}`
+      }
+      return `https://picsum.photos/id/${this.picId}/50/`
+    },
+
+    getPrice() {
+      let price = 0;
+      if (this.positionBack) {
+        price = price + 10;
+      }
+      if (this.positionFront) {
+        price = price + 10;
+      }
+      return price;
+    },
+
     randomPic() {
       const randomId = Math.floor(Math.random() * (1025 - 1000) + 1000);
       if (randomId === this.picId) {
@@ -196,9 +255,6 @@ export default {
       this.currentStep = this.currentStep - 1;
     },
 
-    getPicUrl() {
-      return `https://picsum.photos/id/${this.picId}/50/`
-    },
 
     onClientDataFormSubmit(value) {
       this.formValue = value;

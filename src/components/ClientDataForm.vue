@@ -3,12 +3,14 @@
         <v-form ref="form" v-model="valid">
             <v-row>
                 <v-col cols="12">
-                    <v-text-field v-model="clientFirstName" :rules="rules" label="Imię" class="required"></v-text-field>
+                    <v-text-field v-model="clientFirstName" :rules="basicTextFieldRules" label="Imię" class="required">
+                    </v-text-field>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <v-text-field v-model="clientLastName" :rules="rules" label="Nazwisko" class="required">
+                    <v-text-field v-model="clientLastName" :rules="basicTextFieldRules" label="Nazwisko"
+                        class="required">
                     </v-text-field>
                 </v-col>
             </v-row>
@@ -19,30 +21,34 @@
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <v-text-field v-model="streetName" :rules="rules" label="Ulica" class="required"></v-text-field>
+                    <v-text-field v-model="streetName" :rules="basicTextFieldRules" label="Ulica" class="required">
+                    </v-text-field>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col cols="6">
-                    <v-text-field v-model="buildingNumber" :rules="rules" label="Nr budynku" class="required">
+                    <v-text-field v-model="buildingNumber" :rules="buildingNumberRules" label="Nr budynku"
+                        class="required">
                     </v-text-field>
                 </v-col>
                 <v-col cols="6">
-                    <v-text-field v-model="flatNumber" label="Nr mieszkania"></v-text-field>
+                    <v-text-field v-model="flatNumber" label="Nr mieszkania" :rules="flatNumberRules"></v-text-field>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col cols="6">
-                    <v-text-field v-model="cityName" :rules="rules" label="Miasto" class="required"></v-text-field>
+                    <v-text-field v-model="cityName" :rules="basicTextFieldRules" label="Miasto" class="required">
+                    </v-text-field>
                 </v-col>
                 <v-col cols="6">
-                    <v-text-field v-model="cityCode" :rules="rules" label="Kod pocztowy" class="required">
+                    <v-text-field v-model="cityCode" :rules="cityCodeRules" label="Kod pocztowy" class="required">
                     </v-text-field>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <v-text-field v-model="email" :rules="rules" label="Adres e-mail" class="required"></v-text-field>
+                    <v-text-field v-model="email" :rules="emailRules" label="Adres e-mail" class="required">
+                    </v-text-field>
                 </v-col>
             </v-row>
             <v-row>
@@ -78,19 +84,50 @@ export default {
     }),
 
     computed: {
-        rules() {
-            const rules = []
-            const rule =
-                v => (v && v.trim() || '').length > 0 ||
-                    `Pole jest wymagane`
-            rules.push(rule)
-
-            return rules
+        basicTextFieldRules() {
+            return [this.requiredRule, this.maxLenghtRule, this.minLenghtRule]
         },
+
+        buildingNumberRules() {
+            return [this.requiredRule]
+
+        },
+
+        flatNumberRules() {
+            return [this.isNumberRule]
+        },
+
+        cityCodeRules() {
+            return [this.requiredRule, this.cityCodeRule]
+        },
+
+        emailRules() {
+            return [this.requiredRule, this.emailRule]
+        }
+
     },
 
 
     methods: {
+        requiredRule: v => (v && v.trim() || '').length > 0 ||
+            `Pole jest wymagane`,
+
+        maxLenghtRule: v => (v && v.trim() || '').length < 250 ||
+            `Przekroczono maksymalną ilość znaków: 250`,
+
+        minLenghtRule: v => (v && v.trim() || '').length > 2 ||
+            `Minimalna ilość znaków: 3`,
+
+        isNumberRule: v => /^\d+$/.test(v.trim()) ||
+            `Wartość powinna być numerem`,
+
+        cityCodeRule: v => /\d{2}-\d{3}/.test(v.trim()) ||
+            `Wartość powinna być poprawnym kodem pocztowym`,
+
+        emailRule: v => /\S+@\S+\.\S+/.test(v.trim()) ||
+            `Wartość powinna być poprawnym adresem e-mail`,
+
+
         backClick() {
             this.$emit('backClick')
         },
