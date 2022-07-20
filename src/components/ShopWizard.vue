@@ -29,15 +29,7 @@
             Wybór miejsca nadruku
           </v-stepper-step>
           <v-stepper-content step="1">
-            <v-row>
-              <v-col cols="12" class="d-flex flex-column mb-5">
-                <v-checkbox v-model="positionFront" label="Przód" class="pl-2"></v-checkbox>
-                <v-checkbox v-model="positionBack" label="Tył" class="pl-2"></v-checkbox>
-                <v-btn @click="nextStep()" small color="primary" class="align-self-center">
-                  Dalej
-                </v-btn>
-              </v-col>
-            </v-row>
+            <PicturePositionSelector @submitClick="onPicturePositionSubmit" />
           </v-stepper-content>
 
           <!-- step 2-->
@@ -184,11 +176,8 @@
             </v-row>
             <v-row>
               <v-col cols="12" class="d-flex justify-center align-center my-3">
-                <v-btn @click="prevStep()" small outlined class="align-self-center mx-1">
-                  Wstecz
-                </v-btn>
                 <v-btn @click="nextStep()" :disabled="firstSummaryButtonDisabled()" small color="primary"
-                  class="align-self-center mx-1">
+                  class="align-self-center">
                   Dalej
                 </v-btn>
               </v-col>
@@ -246,21 +235,72 @@
           </v-stepper-step>
           <v-stepper-content step="7">
             <v-row>
-              <v-col cols="12">
+              <v-col cols="7">
                 <h5>Pozycja nadruku:</h5>
-                <span v-if="positionFront">przód</span>
+                <span v-if="positionFront">Przód</span>
                 <span v-if="positionFront && positionBack"> i </span>
-                <span v-if="positionBack">tył</span>
+                <span v-if="positionBack">Tył</span>
+              </v-col>
+
+              <v-col cols="2" class="d-flex justify-center align-center">
+                <v-btn @click="goToStep(1)" fab x-small outlined>
+                  <v-icon>
+                    mdi-pencil
+                  </v-icon>
+                </v-btn>
+              </v-col>
+              <v-col cols="2" class="d-flex justify-center align-center">
+                <v-btn @click="toggleCompleteStep(1)" fab x-small :outlined="!summaryStatus[1]" color="success">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12">
+              <v-col cols="7">
                 <h5>Nadruk:</h5>
                 <img :src="getPicUrl()" class="pic-select-prev" />
               </v-col>
+              <v-col cols="2" class="d-flex justify-center align-center">
+                <v-btn @click="goToStep(2)" fab x-small outlined>
+                  <v-icon>
+                    mdi-pencil
+                  </v-icon>
+                </v-btn>
+              </v-col>
+              <v-col cols="2" class="d-flex justify-center align-center">
+                <v-btn @click="toggleCompleteStep(2)" fab x-small :outlined="!summaryStatus[2]" color="success">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="7">
+                <h5>Efekt:</h5>
+                <span v-if="picEffect === 'grayscale'">Odcień szarości</span>
+                <span v-if="picEffect === 'blur'">Rozmycie</span>
+                <span v-if="!picEffect">Żaden</span>
+              </v-col>
+              <v-col cols="2" class="d-flex justify-center align-center">
+                <v-btn @click="goToStep(3)" fab x-small outlined>
+                  <v-icon>
+                    mdi-pencil
+                  </v-icon>
+                </v-btn>
+              </v-col>
+              <v-col cols="2" class="d-flex justify-center align-center">
+                <v-btn @click="toggleCompleteStep(3)" fab x-small :outlined="!summaryStatus[3]" color="success">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
+              </v-col>
             </v-row>
             <v-row v-if="formValue">
-              <v-col cols="12">
+              <v-col cols="7">
                 <v-row>
                   <v-col cols="12">
                     <h5>Dane zamawiającego:</h5>
@@ -283,13 +323,56 @@
                   </v-col>
                 </v-row>
               </v-col>
+              <v-col cols="2" class="d-flex justify-center ">
+                <v-btn @click="goToStep(5)" fab x-small outlined>
+                  <v-icon>
+                    mdi-pencil
+                  </v-icon>
+                </v-btn>
+              </v-col>
+              <v-col cols="2" class="d-flex justify-center ">
+                <v-btn @click="toggleCompleteStep(5)" fab x-small :outlined="!summaryStatus[5]" color="success">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row v-if="deliveryFormValue">
+              <v-col cols="7">
+                <v-row>
+                  <v-col cols="12">
+                    <h5>Dane do wysyłki:</h5>
+                    <div>
+                      <span>ul. {{ deliveryFormValue.streetName }} {{ deliveryFormValue.buildingNumber }}
+                      </span>
+                      <span v-if="deliveryFormValue.flatNumber"> / {{ deliveryFormValue.flatNumber }}</span>
+                    </div>
+                    <div>
+                      <span>{{ deliveryFormValue.cityCode }} {{ deliveryFormValue.cityName }}</span>
+                    </div>
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col cols="2" class="d-flex justify-center ">
+                <v-btn @click="goToStep(6)" fab x-small outlined>
+                  <v-icon>
+                    mdi-pencil
+                  </v-icon>
+                </v-btn>
+              </v-col>
+              <v-col cols="2" class="d-flex justify-center ">
+                <v-btn @click="toggleCompleteStep(6)" fab x-small :outlined="!summaryStatus[6]" color="success">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
+              </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" class="d-flex justify-center align-center mb-5">
-                <v-btn @click="prevStep()" small outlined class="align-self-center mx-1">
-                  Wstecz
-                </v-btn>
-                <v-btn @click="nextStep()" small color="primary" class="align-self-center mx-1">
+              <v-col cols="12" class="d-flex justify-center align-center my-3">
+                <v-btn @click="confirmPurchase()" :disabled="secondSummaryButtonDisabled()" small color="accent"
+                  class="align-self-center">
                   Złóż zamówienie
                 </v-btn>
               </v-col>
@@ -305,11 +388,12 @@
 
 <script>
 import ClientDataForm from './ClientDataForm';
+import PicturePositionSelector from './PicturePositionSelector';
 
 
 export default {
   name: 'ShopWizard',
-  components: { ClientDataForm },
+  components: { ClientDataForm, PicturePositionSelector },
   data: () => ({
     currentStep: 1,
 
@@ -360,6 +444,10 @@ export default {
       if (this.picEffect === 'grayscale') {
         price = price + 2;
       }
+
+      if (this.transport === 'delivery') {
+        price = price + 5;
+      }
       return price;
     },
 
@@ -399,6 +487,12 @@ export default {
       this.summaryStatus[step] = !this.summaryStatus[step];
     },
 
+    onPicturePositionSubmit(value) {
+      this.positionFront = value.positionFront;
+      this.positionBack = value.positionBack;
+      this.nextStep();
+    },
+
     onClientDataFormSubmit(value) {
       this.formValue = value;
       this.nextStep();
@@ -421,6 +515,14 @@ export default {
 
     firstSummaryButtonDisabled() {
       return !this.summaryStatus[1] || !this.summaryStatus[2] || !this.summaryStatus[3]
+    },
+
+    secondSummaryButtonDisabled() {
+      return this.firstSummaryButtonDisabled() || !this.summaryStatus[5] || !this.summaryStatus[6]
+    },
+
+    confirmPurchase() {
+      alert('confirm purchase')
     }
   }
 
