@@ -317,12 +317,12 @@
                 </v-col>
               </v-row>
             </v-stepper-content>
-
           </v-stepper>
         </v-col>
-
       </v-row>
     </v-col>
+    <ThankYouPage v-if="formValue" :dialog="dialog" :summaryData="getThankYouPageSummary()"
+      @closeDialog="onDialogCloseEvent" />
   </v-row>
 </template>
 
@@ -331,11 +331,12 @@ import ClientDataForm from './ClientDataForm';
 import PicturePositionSelector from './PicturePositionSelector';
 import PictureSelector from './PictureSelector';
 import PictureEffectSelector from './PictureEffectSelector';
+import ThankYouPage from './ThankYouPage';
 
 
 export default {
   name: 'ShopWizard',
-  components: { ClientDataForm, PicturePositionSelector, PictureSelector, PictureEffectSelector },
+  components: { ClientDataForm, PicturePositionSelector, PictureSelector, PictureEffectSelector, ThankYouPage },
   data: () => ({
     currentStep: 1,
 
@@ -350,6 +351,7 @@ export default {
     formValue: null,
     deliveryFormValue: null,
 
+    dialog: false,
     summaryStatus: {
       1: false,
       2: false,
@@ -447,6 +449,10 @@ export default {
       this.nextStep();
     },
 
+    onDialogCloseEvent() {
+      this.dialog = false;
+    },
+
     setDeliveryFormValue() {
       this.deliveryFormValue = {
         streetName: this.formValue.streetName,
@@ -466,7 +472,31 @@ export default {
     },
 
     confirmPurchase() {
-      alert('confirm purchase')
+      console.group(`order: `, {
+        ...this.formValue,
+        picId: this.picId,
+        positionFront: this.positionFront,
+        positionBack: this.positionBack,
+        picEffect: this.picEffect,
+        blurScale: this.blurScale,
+        transport: this.transport,
+        deliveryAddress: this.deliveryFormValue
+      })
+
+      this.dialog = true;
+    },
+
+    getThankYouPageSummary() {
+
+      return {
+        ...this.formValue,
+        positionFront: this.positionFront,
+        positionBack: this.positionBack,
+        picEffect: this.picEffect,
+        blurScale: this.blurScale,
+        transport: this.transport,
+        deliveryAddress: this.deliveryFormValue
+      }
     }
   }
 
