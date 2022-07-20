@@ -9,7 +9,7 @@
                 </v-btn>
             </v-col>
             <v-col cols="4" class="d-flex flex-column">
-                <img :src="picUrl" class="pic-select-prev" />
+                <img :src="picUrl" />
             </v-col>
             <v-col cols="4" class="d-flex justify-center align-center">
                 <v-btn @click="nextPicClick()" class="mx-2" fab small outlined>
