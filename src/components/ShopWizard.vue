@@ -44,7 +44,6 @@
           <v-stepper-step :complete="currentStep > 2" step="2">
             Wybór grafiki do nadruku
           </v-stepper-step>
-
           <v-stepper-content step="2">
             <v-row>
               <v-col cols="4" class="d-flex flex-column justify-center align-center">
@@ -113,22 +112,103 @@
             </v-row>
           </v-stepper-content>
 
-          <!-- step 4 -->
+          <!-- step 4-->
           <v-stepper-step :complete="currentStep > 4" step="4">
-            Dane zamawiającego
+            Podsumowanie
           </v-stepper-step>
-
           <v-stepper-content step="4">
-            <ClientDataForm @submitClick="onClientDataFormSubmit" @backClick="prevStep" />
-          </v-stepper-content>
+            <v-row>
+              <v-col cols="7">
+                <h5>Pozycja nadruku:</h5>
+                <span v-if="positionFront">Przód</span>
+                <span v-if="positionFront && positionBack"> i </span>
+                <span v-if="positionBack">Tył</span>
+              </v-col>
 
+              <v-col cols="2" class="d-flex justify-center align-center">
+                <v-btn @click="goToStep(1)" fab x-small outlined>
+                  <v-icon>
+                    mdi-pencil
+                  </v-icon>
+                </v-btn>
+              </v-col>
+              <v-col cols="2" class="d-flex justify-center align-center">
+                <v-btn @click="toggleCompleteStep(1)" fab x-small :outlined="!summaryStatus[1]" color="success">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="7">
+                <h5>Nadruk:</h5>
+                <img :src="getPicUrl()" class="pic-select-prev" />
+              </v-col>
+              <v-col cols="2" class="d-flex justify-center align-center">
+                <v-btn @click="goToStep(2)" fab x-small outlined>
+                  <v-icon>
+                    mdi-pencil
+                  </v-icon>
+                </v-btn>
+              </v-col>
+              <v-col cols="2" class="d-flex justify-center align-center">
+                <v-btn @click="toggleCompleteStep(2)" fab x-small :outlined="!summaryStatus[2]" color="success">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="7">
+                <h5>Efekt:</h5>
+                <span v-if="picEffect === 'grayscale'">Odcień szarości</span>
+                <span v-if="picEffect === 'blur'">Rozmycie</span>
+                <span v-if="!picEffect">Żaden</span>
+              </v-col>
+              <v-col cols="2" class="d-flex justify-center align-center">
+                <v-btn @click="goToStep(3)" fab x-small outlined>
+                  <v-icon>
+                    mdi-pencil
+                  </v-icon>
+                </v-btn>
+              </v-col>
+              <v-col cols="2" class="d-flex justify-center align-center">
+                <v-btn @click="toggleCompleteStep(3)" fab x-small :outlined="!summaryStatus[3]" color="success">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" class="d-flex justify-center align-center my-3">
+                <v-btn @click="prevStep()" small outlined class="align-self-center mx-1">
+                  Wstecz
+                </v-btn>
+                <v-btn @click="nextStep()" :disabled="firstSummaryButtonDisabled()" small color="primary"
+                  class="align-self-center mx-1">
+                  Dalej
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-stepper-content>
 
           <!-- step 5 -->
           <v-stepper-step :complete="currentStep > 5" step="5">
+            Dane zamawiającego
+          </v-stepper-step>
+          <v-stepper-content step="5">
+            <ClientDataForm @submitClick="onClientDataFormSubmit" @backClick="prevStep" />
+          </v-stepper-content>
+
+          <!-- step 6 -->
+          <v-stepper-step :complete="currentStep > 6" step="6">
             Wybór sposobu odbioru zamówienia
           </v-stepper-step>
 
-          <v-stepper-content step="5">
+          <v-stepper-content step="6">
             <v-row>
               <v-col cols="12 ml-3">
                 <v-radio-group v-model="transport">
@@ -160,12 +240,11 @@
             </v-row>
           </v-stepper-content>
 
-          <!-- step 6 -->
-          <v-stepper-step :complete="currentStep > 6" step="6">
-            Podsumowanie
+          <!-- step 7 -->
+          <v-stepper-step :complete="currentStep > 7" step="7">
+            Podsumowanie zamówienia
           </v-stepper-step>
-
-          <v-stepper-content step="6">
+          <v-stepper-content step="7">
             <v-row>
               <v-col cols="12">
                 <h5>Pozycja nadruku:</h5>
@@ -245,6 +324,14 @@ export default {
 
     formValue: null,
     deliveryFormValue: null,
+
+    summaryStatus: {
+      1: false,
+      2: false,
+      3: false,
+      5: false,
+      6: false
+    }
   }),
 
 
@@ -303,6 +390,14 @@ export default {
       this.currentStep = this.currentStep - 1;
     },
 
+    goToStep(step) {
+      this.currentStep = step;
+      this.summaryStatus[step] = false;
+    },
+
+    toggleCompleteStep(step) {
+      this.summaryStatus[step] = !this.summaryStatus[step];
+    },
 
     onClientDataFormSubmit(value) {
       this.formValue = value;
@@ -322,6 +417,10 @@ export default {
         cityCode: this.formValue.cityCode,
         cityName: this.formValue.cityName,
       }
+    },
+
+    firstSummaryButtonDisabled() {
+      return !this.summaryStatus[1] || !this.summaryStatus[2] || !this.summaryStatus[3]
     }
   }
 
