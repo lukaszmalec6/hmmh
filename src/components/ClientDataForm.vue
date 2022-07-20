@@ -1,20 +1,20 @@
 <template>
     <v-container>
         <v-form ref="form" v-model="valid">
-            <v-row>
+            <v-row v-if="fullForm">
                 <v-col cols="12">
                     <v-text-field v-model="clientFirstName" :rules="basicTextFieldRules" label="Imię" class="required">
                     </v-text-field>
                 </v-col>
             </v-row>
-            <v-row>
+            <v-row v-if="fullForm">
                 <v-col cols="12">
                     <v-text-field v-model="clientLastName" :rules="basicTextFieldRules" label="Nazwisko"
                         class="required">
                     </v-text-field>
                 </v-col>
             </v-row>
-            <v-row>
+            <v-row v-if="fullForm">
                 <v-col cols="12">
                     <h5>Dane do rachunku</h5>
                 </v-col>
@@ -45,7 +45,7 @@
                     </v-text-field>
                 </v-col>
             </v-row>
-            <v-row>
+            <v-row v-if="fullForm">
                 <v-col cols="12">
                     <v-text-field v-model="email" :rules="emailRules" label="Adres e-mail" class="required">
                     </v-text-field>
@@ -70,7 +70,16 @@
 <script>
 export default {
     name: 'ClientDataForm',
-
+    props: {
+        fullForm: {
+            type: Boolean,
+            default: true
+        },
+        patchValues: {
+            type: Object,
+            default: () => ({})
+        }
+    },
     data: () => ({
         valid: true,
         clientFirstName: '',
@@ -82,6 +91,19 @@ export default {
         cityName: '',
         email: '',
     }),
+
+    watch: {
+        patchValues: function (newVal) {
+            if (!newVal) {
+                return;
+            }
+            this.streetName = newVal.streetName;
+            this.buildingNumber = newVal.buildingNumber;
+            this.flatNumber = newVal.flatNumber;
+            this.cityCode = newVal.cityCode;
+            this.cityName = newVal.cityName;
+        }
+    },
 
     computed: {
         basicTextFieldRules() {

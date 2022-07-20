@@ -122,12 +122,50 @@
             <ClientDataForm @submitClick="onClientDataFormSubmit" @backClick="prevStep" />
           </v-stepper-content>
 
+
           <!-- step 5 -->
           <v-stepper-step :complete="currentStep > 5" step="5">
-            Podsumowanie
+            Wybór sposobu odbioru zamówienia
           </v-stepper-step>
 
           <v-stepper-content step="5">
+            <v-row>
+              <v-col cols="12 ml-3">
+                <v-radio-group v-model="transport">
+                  <v-radio label="Odbiór osobisty" value="pickup"></v-radio>
+                  <v-radio label="Wysyłka" value="delivery"></v-radio>
+                </v-radio-group>
+              </v-col>
+            </v-row>
+            <v-row v-if="transport === 'delivery'">
+              <v-col cols="12" class="d-flex justify-center align-center">
+                <v-btn @click="setDeliveryFormValue()" small outlined class="align-self-center mx-1">
+                  Użyj danych rachunku
+                </v-btn>
+              </v-col>
+              <v-col cols="12">
+                <ClientDataForm :patchValues="deliveryFormValue" :fullForm="false"
+                  @submitClick="onDeliveryDataFormSubmit" @backClick="prevStep" />
+              </v-col>
+            </v-row>
+            <v-row v-if="transport !== 'delivery'">
+              <v-col cols="12" class="d-flex justify-center align-center mb-5">
+                <v-btn @click="prevStep()" small outlined class="align-self-center mx-1">
+                  Wstecz
+                </v-btn>
+                <v-btn @click="nextStep()" small color="primary" class="align-self-center mx-1">
+                  Dalej
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-stepper-content>
+
+          <!-- step 6 -->
+          <v-stepper-step :complete="currentStep > 6" step="6">
+            Podsumowanie
+          </v-stepper-step>
+
+          <v-stepper-content step="6">
             <v-row>
               <v-col cols="12">
                 <h5>Pozycja nadruku:</h5>
@@ -203,8 +241,10 @@ export default {
     positionFront: true,
     positionBack: false,
 
+    transport: 'pickup',
 
-    formValue: null
+    formValue: null,
+    deliveryFormValue: null,
   }),
 
 
@@ -224,6 +264,14 @@ export default {
       }
       if (this.positionFront) {
         price = price + 10;
+      }
+
+      if (this.picEffect === 'blur') {
+        price = price + 3;
+      }
+
+      if (this.picEffect === 'grayscale') {
+        price = price + 2;
       }
       return price;
     },
@@ -259,6 +307,21 @@ export default {
     onClientDataFormSubmit(value) {
       this.formValue = value;
       this.nextStep();
+    },
+
+    onDeliveryDataFormSubmit(value) {
+      this.deliveryFormValue = value;
+      this.nextStep();
+    },
+
+    setDeliveryFormValue() {
+      this.deliveryFormValue = {
+        streetName: this.formValue.streetName,
+        buildingNumber: this.formValue.buildingNumber,
+        flatNumber: this.formValue.flatNumber,
+        cityCode: this.formValue.cityCode,
+        cityName: this.formValue.cityName,
+      }
     }
   }
 
