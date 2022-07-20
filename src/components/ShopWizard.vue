@@ -1,8 +1,8 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12">
-        <v-img src="../assets/tshirt-blank.png" width="345" height="170">
+      <v-col cols="12" class="d-flex justify-center align-center">
+        <v-img src="../assets/tshirt-blank.png">
           <v-row class="tshirt-overlay px-5">
             <v-col cols="6" class="d-flex justify-center align-center">
               <img v-if="positionFront" :src="getPicUrl()" class="tshirt-pic-front" />
@@ -52,68 +52,64 @@
           </v-stepper-step>
           <v-stepper-content step="4">
             <v-row>
-              <v-col cols="7">
+              <v-col cols="2" class="d-flex justify-center align-center">
+                <v-btn @click="toggleCompleteStep(1)" fab x-small :outlined="!summaryStatus[1]" color="success"
+                  class="mx-1">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
+                <v-btn @click="goToStep(1)" fab x-small outlined class="mx-1">
+                  <v-icon>
+                    mdi-pencil
+                  </v-icon>
+                </v-btn>
+              </v-col>
+              <v-col cols="10">
                 <h5>Pozycja nadruku:</h5>
                 <span v-if="positionFront">Przód</span>
                 <span v-if="positionFront && positionBack"> i </span>
                 <span v-if="positionBack">Tył</span>
               </v-col>
-
+            </v-row>
+            <v-row>
               <v-col cols="2" class="d-flex justify-center align-center">
-                <v-btn @click="goToStep(1)" fab x-small outlined>
+                <v-btn @click="toggleCompleteStep(2)" fab x-small :outlined="!summaryStatus[2]" color="success"
+                  class="mx-1">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
+                <v-btn @click="goToStep(2)" fab x-small outlined class="mx-1">
                   <v-icon>
                     mdi-pencil
                   </v-icon>
                 </v-btn>
               </v-col>
-              <v-col cols="2" class="d-flex justify-center align-center">
-                <v-btn @click="toggleCompleteStep(1)" fab x-small :outlined="!summaryStatus[1]" color="success">
-                  <v-icon>
-                    mdi-check
-                  </v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="7">
+              <v-col cols="10-">
                 <h5>Nadruk:</h5>
                 <img :src="getPicUrl()" class="pic-select-prev" />
               </v-col>
+            </v-row>
+            <v-row>
               <v-col cols="2" class="d-flex justify-center align-center">
-                <v-btn @click="goToStep(2)" fab x-small outlined>
+                <v-btn @click="toggleCompleteStep(3)" fab x-small :outlined="!summaryStatus[3]" color="success"
+                  class="mx-1">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
+                <v-btn @click="goToStep(3)" fab x-small outlined class="mx-1">
                   <v-icon>
                     mdi-pencil
                   </v-icon>
                 </v-btn>
               </v-col>
-              <v-col cols="2" class="d-flex justify-center align-center">
-                <v-btn @click="toggleCompleteStep(2)" fab x-small :outlined="!summaryStatus[2]" color="success">
-                  <v-icon>
-                    mdi-check
-                  </v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="7">
+              <v-col cols="10">
                 <h5>Efekt:</h5>
                 <span v-if="picEffect === 'grayscale'">Odcień szarości</span>
                 <span v-if="picEffect === 'blur'">Rozmycie</span>
                 <span v-if="!picEffect">Żaden</span>
-              </v-col>
-              <v-col cols="2" class="d-flex justify-center align-center">
-                <v-btn @click="goToStep(3)" fab x-small outlined>
-                  <v-icon>
-                    mdi-pencil
-                  </v-icon>
-                </v-btn>
-              </v-col>
-              <v-col cols="2" class="d-flex justify-center align-center">
-                <v-btn @click="toggleCompleteStep(3)" fab x-small :outlined="!summaryStatus[3]" color="success">
-                  <v-icon>
-                    mdi-check
-                  </v-icon>
-                </v-btn>
               </v-col>
             </v-row>
             <v-row>
@@ -174,72 +170,81 @@
           </v-stepper-step>
           <v-stepper-content step="7">
             <v-row>
-              <v-col cols="7">
+              <v-col cols="2" class="d-flex justify-center align-center">
+                <v-btn @click="toggleCompleteStep(1)" fab x-small :outlined="!summaryStatus[1]" color="success"
+                  class="mx-1">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
+                <v-btn @click="goToStep(1)" fab x-small outlined class="mx-1">
+                  <v-icon>
+                    mdi-pencil
+                  </v-icon>
+                </v-btn>
+              </v-col>
+              <v-col cols="10">
                 <h5>Pozycja nadruku:</h5>
                 <span v-if="positionFront">Przód</span>
                 <span v-if="positionFront && positionBack"> i </span>
                 <span v-if="positionBack">Tył</span>
               </v-col>
-
+            </v-row>
+            <v-row>
               <v-col cols="2" class="d-flex justify-center align-center">
-                <v-btn @click="goToStep(1)" fab x-small outlined>
+                <v-btn @click="toggleCompleteStep(2)" fab x-small :outlined="!summaryStatus[2]" color="success"
+                  class="mx-1">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
+                <v-btn @click="goToStep(2)" fab x-small outlined class="mx-1">
                   <v-icon>
                     mdi-pencil
                   </v-icon>
                 </v-btn>
               </v-col>
-              <v-col cols="2" class="d-flex justify-center align-center">
-                <v-btn @click="toggleCompleteStep(1)" fab x-small :outlined="!summaryStatus[1]" color="success">
-                  <v-icon>
-                    mdi-check
-                  </v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="7">
+              <v-col cols="10-">
                 <h5>Nadruk:</h5>
                 <img :src="getPicUrl()" class="pic-select-prev" />
               </v-col>
+            </v-row>
+            <v-row>
               <v-col cols="2" class="d-flex justify-center align-center">
-                <v-btn @click="goToStep(2)" fab x-small outlined>
+                <v-btn @click="toggleCompleteStep(3)" fab x-small :outlined="!summaryStatus[3]" color="success"
+                  class="mx-1">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
+                <v-btn @click="goToStep(3)" fab x-small outlined class="mx-1">
                   <v-icon>
                     mdi-pencil
                   </v-icon>
                 </v-btn>
               </v-col>
-              <v-col cols="2" class="d-flex justify-center align-center">
-                <v-btn @click="toggleCompleteStep(2)" fab x-small :outlined="!summaryStatus[2]" color="success">
-                  <v-icon>
-                    mdi-check
-                  </v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="7">
+              <v-col cols="10">
                 <h5>Efekt:</h5>
                 <span v-if="picEffect === 'grayscale'">Odcień szarości</span>
                 <span v-if="picEffect === 'blur'">Rozmycie</span>
                 <span v-if="!picEffect">Żaden</span>
               </v-col>
-              <v-col cols="2" class="d-flex justify-center align-center">
-                <v-btn @click="goToStep(3)" fab x-small outlined>
+            </v-row>
+            <v-row v-if="formValue">
+              <v-col cols="2" class="d-flex justify-center">
+                <v-btn @click="toggleCompleteStep(5)" fab x-small :outlined="!summaryStatus[5]" color="success"
+                  class="mx-1">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
+                <v-btn @click="goToStep(5)" fab x-small outlined class="mx-1">
                   <v-icon>
                     mdi-pencil
                   </v-icon>
                 </v-btn>
               </v-col>
-              <v-col cols="2" class="d-flex justify-center align-center">
-                <v-btn @click="toggleCompleteStep(3)" fab x-small :outlined="!summaryStatus[3]" color="success">
-                  <v-icon>
-                    mdi-check
-                  </v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row v-if="formValue">
-              <v-col cols="7">
+              <v-col cols="10">
                 <v-row>
                   <v-col cols="12">
                     <h5>Dane zamawiającego:</h5>
@@ -262,24 +267,30 @@
                   </v-col>
                 </v-row>
               </v-col>
+            </v-row>
+            <v-row>
               <v-col cols="2" class="d-flex justify-center ">
-                <v-btn @click="goToStep(5)" fab x-small outlined>
+                <v-btn @click="toggleCompleteStep(6)" fab x-small :outlined="!summaryStatus[6]" color="success"
+                  class="mx-1">
+                  <v-icon>
+                    mdi-check
+                  </v-icon>
+                </v-btn>
+                <v-btn @click="goToStep(6)" fab x-small outlined class="mx-1">
                   <v-icon>
                     mdi-pencil
                   </v-icon>
                 </v-btn>
               </v-col>
-              <v-col cols="2" class="d-flex justify-center ">
-                <v-btn @click="toggleCompleteStep(5)" fab x-small :outlined="!summaryStatus[5]" color="success">
-                  <v-icon>
-                    mdi-check
-                  </v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row v-if="deliveryFormValue">
-              <v-col cols="7">
+              <v-col cols=" 10">
                 <v-row>
+                  <v-col cols="12">
+                    <h5>Sposób odbioru zamówienia:</h5>
+                    <span v-if="transport === 'delivery'">Dostawa</span>
+                    <span v-if="transport === 'pickup'">Odbiór osobisty</span>
+                  </v-col>
+                </v-row>
+                <v-row v-if="deliveryFormValue && transport === 'delivery'">
                   <v-col cols="12">
                     <h5>Dane do wysyłki:</h5>
                     <div>
@@ -292,20 +303,6 @@
                     </div>
                   </v-col>
                 </v-row>
-              </v-col>
-              <v-col cols="2" class="d-flex justify-center ">
-                <v-btn @click="goToStep(6)" fab x-small outlined>
-                  <v-icon>
-                    mdi-pencil
-                  </v-icon>
-                </v-btn>
-              </v-col>
-              <v-col cols="2" class="d-flex justify-center ">
-                <v-btn @click="toggleCompleteStep(6)" fab x-small :outlined="!summaryStatus[6]" color="success">
-                  <v-icon>
-                    mdi-check
-                  </v-icon>
-                </v-btn>
               </v-col>
             </v-row>
             <v-row>
