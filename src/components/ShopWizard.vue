@@ -24,87 +24,29 @@
       <v-col cols="12">
         <v-stepper class="stepper" v-model="currentStep" vertical>
 
-          <!-- step 1-->
           <v-stepper-step :complete="currentStep > 1" step="1">
             Wybór miejsca nadruku
           </v-stepper-step>
           <v-stepper-content step="1">
-            <PicturePositionSelector @submitClick="onPicturePositionSubmit" />
+            <PicturePositionSelector @valueChanges="onPicturePositionSubmit" @submitClick="nextStep" />
           </v-stepper-content>
 
-          <!-- step 2-->
           <v-stepper-step :complete="currentStep > 2" step="2">
             Wybór grafiki do nadruku
           </v-stepper-step>
           <v-stepper-content step="2">
-            <v-row>
-              <v-col cols="4" class="d-flex flex-column justify-center align-center">
-                <v-btn @click="prevPic()" class="mx-2" fab small outlined>
-                  <v-icon>
-                    mdi-arrow-left
-                  </v-icon>
-                </v-btn>
-              </v-col>
-              <v-col cols="4" class="d-flex flex-column">
-                <img :src="getPicUrl()" class="pic-select-prev" />
-              </v-col>
-              <v-col cols="4" class="d-flex justify-center align-center">
-                <v-btn @click="nextPic()" class="mx-2" fab small outlined>
-                  <v-icon>
-                    mdi-arrow-right
-                  </v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" class="d-flex justify-center align-center mb-3">
-                <v-btn @click="randomPic()" small outlined class="align-self-center">
-                  Wylosuj zdjecie
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" class="d-flex justify-center align-center mb-5">
-                <v-btn @click="prevStep()" small outlined class="align-self-center mx-1">
-                  Wstecz
-                </v-btn>
-                <v-btn @click="nextStep()" small color="primary" class="align-self-center mx-1">
-                  Dalej
-                </v-btn>
-              </v-col>
-            </v-row>
+            <PictureSelector @submitClick="nextStep" @backClick="prevStep" @randomPicClick="randomPic"
+              @nextPicClick="nextPic" @prevPicClick="prevPic" :picUrl="getPicUrl()" />
           </v-stepper-content>
 
-          <!-- step 3-->
           <v-stepper-step :complete="currentStep > 3" step="3">
             Wybór efektów nadruku
           </v-stepper-step>
           <v-stepper-content step="3">
-            <v-row>
-              <v-col cols="12 ml-3">
-                <v-radio-group v-model="picEffect">
-                  <v-radio label="Odcień szarości" value="grayscale"></v-radio>
-                  <v-radio label="Rozmycie" value="blur"></v-radio>
-                  <v-slider v-if="picEffect === 'blur'" v-model="blurScale" hint="Stopień rozmycia" max="10" min="1"
-                    class="mt-2">
-                  </v-slider>
-                  <v-radio label="Żaden" :value="null"></v-radio>
-                </v-radio-group>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" class="d-flex justify-center align-center mb-5">
-                <v-btn @click="prevStep()" small outlined class="align-self-center mx-1">
-                  Wstecz
-                </v-btn>
-                <v-btn @click="nextStep()" small color="primary" class="align-self-center mx-1">
-                  Dalej
-                </v-btn>
-              </v-col>
-            </v-row>
+            <PictureEffectSelector @valueChanges="onPictureEffectValueChanges" @submitClick="nextStep"
+              @backClick="prevStep" />
           </v-stepper-content>
 
-          <!-- step 4-->
           <v-stepper-step :complete="currentStep > 4" step="4">
             Podsumowanie
           </v-stepper-step>
@@ -184,7 +126,6 @@
             </v-row>
           </v-stepper-content>
 
-          <!-- step 5 -->
           <v-stepper-step :complete="currentStep > 5" step="5">
             Dane zamawiającego
           </v-stepper-step>
@@ -192,7 +133,6 @@
             <ClientDataForm @submitClick="onClientDataFormSubmit" @backClick="prevStep" />
           </v-stepper-content>
 
-          <!-- step 6 -->
           <v-stepper-step :complete="currentStep > 6" step="6">
             Wybór sposobu odbioru zamówienia
           </v-stepper-step>
@@ -229,7 +169,6 @@
             </v-row>
           </v-stepper-content>
 
-          <!-- step 7 -->
           <v-stepper-step :complete="currentStep > 7" step="7">
             Podsumowanie zamówienia
           </v-stepper-step>
@@ -389,20 +328,21 @@
 <script>
 import ClientDataForm from './ClientDataForm';
 import PicturePositionSelector from './PicturePositionSelector';
+import PictureSelector from './PictureSelector';
+import PictureEffectSelector from './PictureEffectSelector';
 
 
 export default {
   name: 'ShopWizard',
-  components: { ClientDataForm, PicturePositionSelector },
+  components: { ClientDataForm, PicturePositionSelector, PictureSelector, PictureEffectSelector },
   data: () => ({
     currentStep: 1,
 
     picId: 1000,
-    picEffect: null,
-    blurScale: 1,
-
     positionFront: true,
     positionBack: false,
+    picEffect: null,
+    blurScale: 1,
 
     transport: 'pickup',
 
@@ -467,7 +407,6 @@ export default {
 
     prevPic() {
       this.picId = this.picId - 1;
-
     },
 
     nextStep() {
@@ -490,12 +429,16 @@ export default {
     onPicturePositionSubmit(value) {
       this.positionFront = value.positionFront;
       this.positionBack = value.positionBack;
-      this.nextStep();
     },
 
     onClientDataFormSubmit(value) {
       this.formValue = value;
       this.nextStep();
+    },
+
+    onPictureEffectValueChanges(value) {
+      this.picEffect = value.picEffect;
+      this.blurScale = value.blurScale;
     },
 
     onDeliveryDataFormSubmit(value) {
